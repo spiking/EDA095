@@ -34,9 +34,10 @@ public class Downloader {
 			while ((line = br.readLine()) != null) {
 				Matcher match = pattern.matcher(line);
 				while (match.find()) {
-					if (line.contains(".pdf")) {
-						System.out.println(match.group(1));
-						links.add(match.group(1)); // add PDF-file links
+					String link = match.group(1);
+					if (valid(link)) {
+						System.out.println(link);
+						links.add(makeAbsolute(url.toString(), link));
 					}
 				}
 			}
@@ -53,6 +54,37 @@ public class Downloader {
 			System.out.println(fileName);
 			downloadFile(link, fileName);
 		}
+	}
+
+	private boolean valid(String s) {
+		if (s.matches("javascript:.*|mailto:.*")) {
+			return false;
+		}
+		
+		if(!s.contains(".pdf")) {
+			return false;
+		}
+		
+		return true;
+	}
+
+	private String makeAbsolute(String url, String link) {
+		if (link.matches("http://.*")) {
+			return link;
+		}
+		if (link.matches("/.*") && url.matches(".*$[^/]")) {
+			return url + "/" + link;
+		}
+		if (link.matches("[^/].*") && url.matches(".*[^/]")) {
+			return url + "/" + link;
+		}
+		if (link.matches("/.*") && url.matches(".*[/]")) {
+			return url + link;
+		}
+		if (link.matches("/.*") && url.matches(".*[^/]")) {
+			return url + link;
+		}
+		throw new RuntimeException("Cannot make the link absolute. Url: " + url + " Link " + link);
 	}
 
 	private void downloadFile(String link, String fileName) {
