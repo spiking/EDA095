@@ -4,11 +4,10 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
+
+import Multithread_Threads.Downloader;
 
 public class Runner extends Thread {
-
 	Downloader downloader;
 
 	public Runner(Downloader downloader) {
@@ -22,10 +21,11 @@ public class Runner extends Thread {
 
 		while (!downloader.isEmpty()) {
 			try {
-
-				String stringURL = downloader.getURL();
-				String fileName = getFileName(stringURL);
-				URL url = new URL(stringURL);
+				
+				System.out.println("STARTS DOWNLOADING FILE! \n");
+				
+				URL url = downloader.getURL();
+				String fileName = downloader.getFileName(url);
 
 				in = new BufferedInputStream(url.openStream());
 				out = new FileOutputStream(new File(fileName));
@@ -45,10 +45,5 @@ public class Runner extends Thread {
 			}
 		}
 
-	}
-
-	private String getFileName(String url) {
-		int fileNameIndex = url.lastIndexOf("/") + 1;
-		return url.substring(fileNameIndex);
 	}
 }

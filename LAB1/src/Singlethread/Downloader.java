@@ -4,15 +4,17 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Downloader {
 	private URL url;
-	private ArrayList<String> urls;
+	private HashMap<URL, String> pdfs;
 
 	public Downloader(String link) {
 		try {
@@ -23,24 +25,24 @@ public class Downloader {
 	}
 
 	public void download() {
-		
-		System.out.println("DOWNLOADING! \n");
 
+		System.out.println("DOWNLOADING! \n");
 		BufferedReader br = null;
-		urls = new ArrayList<String>();
+
 		try {
 
 			br = new BufferedReader(new InputStreamReader(new URL(url.toString()).openStream()));
-
-			Pattern pattern = Pattern.compile("href=\"(.*?.pdf)"); // PDF-file
-																	// links
+			Pattern pattern = Pattern.compile("(?i)(href=\")(.+?)([^\\/]*.pdf)(\")");
 			String line;
+			
+			pdfs = new HashMap<URL, String>();
+
 			while ((line = br.readLine()) != null) {
 				Matcher match = pattern.matcher(line);
 				while (match.find()) {
-					String link = match.group(1);
-					if (valid(link)) {
-						urls.add(link);
+					URL tempURL = createURL(match.group(2) + match.group(3), url);
+					if (tempURL != null) {
+						pdfs.put(tempURL, match.group(3)); 
 					}
 				}
 			}
@@ -49,45 +51,43 @@ public class Downloader {
 			e.printStackTrace();
 		}
 
-		// Extract the PDF-file name and download the file	
-	
-		for (String link : urls) {
-			int fileNameIndex = link.lastIndexOf("/") + 1;
-			String fileName = link.substring(fileNameIndex);
-			downloadFile(link, fileName);
+		for (Entry<URL, String> pair : pdfs.entrySet()) {
+			downloadFile(pair.getKey(), pair.getValue());
 		}
 	}
 
-	private boolean valid(String s) {
-		if (s.matches("javascript:.*|mailto:.*") || !s.contains(".pdf")) {
-			return false;
-		}
-		return true;
-	}
-
-	private void downloadFile(String link, String fileName) {
-
-		BufferedInputStream in;
-		FileOutputStream out;
+	public void downloadFile(URL url, String fileName) {
+		FileOutputStream fout;
+		BufferedInputStream bis;
 
 		try {
-
-			URL url = new URL(link);
-			in = new BufferedInputStream(url.openStream());
-			out = new FileOutputStream(new File(fileName));
-
-			byte[] input = new byte[1024];
-			int bytesRead = 0;
-			while ((bytesRead = in.read(input)) > -1) {
-				out.write(input, 0, bytesRead);
+			
+			System.out.println("STARTS DOWNLOADING FILE!");
+			
+			fout = new FileOutputStream(new File(fileName));
+			bis = new BufferedInputStream(url.openStream());
+			
+			byte[] buffer = new byte[4096];
+			int bytes;
+			while ((bytes = bis.read(buffer)) > -1) {
+				fout.write(buffer, 0, bytes);
 			}
 
-			out.close();
-			out.flush();
-			in.close();
-			System.out.println("DOWNLOADED : " + fileName + "\n");
-		} catch (Exception e) {
+			bis.close();
+			fout.flush();
+			fout.close();
+
+			System.out.println("DONE WITH " + fileName);
+		} catch (IOException e) {
 			e.printStackTrace();
+		} 
+	}
+	
+	public static URL createURL(String link, URL url) {
+		try {
+			return new URL(url, link);
+		} catch (Exception e) {
+			return null;
 		}
 	}
 }

@@ -21,10 +21,11 @@ public class Runner implements Runnable {
 
 		while (!downloader.isEmpty()) {
 			try {
-
-				String stringURL = downloader.getURL();
-				String fileName = getFileName(stringURL);
-				URL url = new URL(stringURL);
+				
+				System.out.println("STARTS DOWNLOADING FILE! \n");
+				
+				URL url = downloader.getURL();
+				String fileName = downloader.getFileName(url);
 
 				in = new BufferedInputStream(url.openStream());
 				out = new FileOutputStream(new File(fileName));
@@ -44,11 +45,6 @@ public class Runner implements Runnable {
 			}
 		}
 
-	}
-
-	private String getFileName(String url) {
-		int fileNameIndex = url.lastIndexOf("/") + 1;
-		return url.substring(fileNameIndex);
 	}
 
 }

@@ -1,15 +1,12 @@
 package Multithread_Runnable;
 
 public class Main {
-	
+
 	public static void main(String[] args) {
-		
-		
-		String url = "http://cs.lth.se/eda095/foerelaesningar/?no_cache=1";
+
+		String url = "http://cs229.stanford.edu/materials.html";
 		Downloader goAndGetThemFiles = new Downloader(url);
 		goAndGetThemFiles.download();
-		
-		
-	}
 
+	}
 }
