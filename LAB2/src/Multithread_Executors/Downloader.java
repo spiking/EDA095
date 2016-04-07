@@ -58,6 +58,8 @@ public class Downloader {
 		for (Entry<URL, String> pair : pdfs.entrySet()) {
 			executor.submit(new Runner(pair.getKey(), pair.getValue()));
 		}
+		
+		executor.shutdown();
 	}
 
 	private URL createURL(String link, URL url) {
