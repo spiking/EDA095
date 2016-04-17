@@ -20,12 +20,11 @@ public class ClientThread extends Thread {
 	}
 
 	public void run() {
-
 		try {
-			int ch = in.read();
-			while (ch != -1) {
-				System.out.print((char) ch);
-				ch = in.read();
+			int character = in.read();
+			while (character != -1) { // -1 returned at the end of the stream
+				System.out.print((char) character);
+				character = in.read();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

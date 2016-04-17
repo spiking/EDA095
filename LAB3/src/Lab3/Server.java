@@ -6,12 +6,14 @@ import java.net.Socket;
 
 public class Server {
 	private ServerSocket server;
-	private InputHandler inputHandler;
+	private ClientHandler clientHandler;
+	private MessageHandler messageHandler;
 	
 	
-	public Server(int port, InputHandler inputHandler) throws IOException {
+	public Server(int port, ClientHandler inputHandler, MessageHandler messageHandler) throws IOException {
 		server = new ServerSocket(port);
-		this.inputHandler = inputHandler;
+		this.clientHandler = inputHandler;
+		this.messageHandler = messageHandler;
 		init();
 	}
 
@@ -20,8 +22,9 @@ public class Server {
 		System.out.println("SERVER STARTED!");
 		try {
 			while ((socket = server.accept()) != null) {
-				inputHandler.addConnection(socket);
-				new ServerThread(inputHandler, socket).start();
+				clientHandler.addConnection(socket);
+				ServerThread serverThread = new ServerThread(messageHandler, socket);
+				serverThread.start();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -29,8 +32,9 @@ public class Server {
 	}
 
 	public static void main(String[] args) throws IOException {
-		InputHandler inputHandler = new InputHandler();
-		new Server(30000, inputHandler);
+		ClientHandler clientHandler = new ClientHandler();
+		MessageHandler messageHandler = new MessageHandler(clientHandler);
+		new Server(30000, clientHandler, messageHandler);
 	}
 
 }

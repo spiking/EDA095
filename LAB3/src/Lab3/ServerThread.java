@@ -4,11 +4,11 @@ import java.io.InputStream;
 import java.net.Socket;
 
 public class ServerThread extends Thread {
-	private InputHandler inputHandler;
+	private MessageHandler messageHandler;
 	private Socket socket;
 
-	public ServerThread(InputHandler inputHandler, Socket socket) {
-		this.inputHandler = inputHandler;
+	public ServerThread(MessageHandler messageHandler, Socket socket) {
+		this.messageHandler = messageHandler;
 		this.socket = socket;
 
 	}
@@ -25,7 +25,7 @@ public class ServerThread extends Thread {
 			if (!socket.isClosed()) {
 				try {
 					int length = in.read(input);
-					inputHandler.writeMessage(input, length, socket);
+					messageHandler.writeMessage(input, length, socket);
 				} catch (Exception e) {
 					// e.printStackTrace();
 					System.out.println("CLIENT - UNKNOWN CONNETION FAILURE!");
