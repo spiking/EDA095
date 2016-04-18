@@ -30,7 +30,7 @@ public class Client {
 				os.flush();
 
 				if (stringInput.equals("Q:")) {
-					socket.close();
+//					socket.close();
 					System.exit(0);
 				}
 
