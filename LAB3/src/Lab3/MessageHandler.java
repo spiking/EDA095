@@ -7,12 +7,11 @@ import java.util.ArrayList;
 
 public class MessageHandler {
 	private ClientHandler clientHandler;
-	
+
 	public MessageHandler(ClientHandler clientHandler) {
 		this.clientHandler = clientHandler;
 	}
-	
-	
+
 	public synchronized void writeMessage(byte[] input, int length, Socket socket) throws UnsupportedEncodingException {
 
 		String command = new String(input, "UTF-8").substring(0, 2);
@@ -31,8 +30,8 @@ public class MessageHandler {
 						os.flush();
 
 					} catch (Exception e) {
-						sockets.remove(s);
-						System.out.println("A client has disconnected.");
+						clientHandler.removeConnection(s);
+						System.out.println("Could not send message to a client, thus disconnected.");
 					}
 				}
 
@@ -50,13 +49,9 @@ public class MessageHandler {
 			}
 		} else if (command.equals("Q:")) {
 			try {
-				OutputStream os = socket.getOutputStream();
-				String stringMsg = "\nYou will now be disconnected!";
-				byte[] msg = stringMsg.getBytes();
-				os.write(msg, 0, msg.length);
-				os.flush();
-				socket.close();
+				System.out.println("A client has disconnected (by valid command).");
 				clientHandler.removeConnection(socket);
+				socket.close();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

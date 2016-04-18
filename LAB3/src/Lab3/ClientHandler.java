@@ -25,7 +25,7 @@ public class ClientHandler {
 	public synchronized void removeConnection(Socket s) {
 		if (sockets.contains(s)) {
 			sockets.remove(s);
-			System.out.println(s.getInetAddress().getHostName() + " at port " + s.getPort() + " has been removed");
+			System.out.println(s.getInetAddress().getHostName() + " at port " + s.getPort() + " has been removed!");
 		}
 	}
 	

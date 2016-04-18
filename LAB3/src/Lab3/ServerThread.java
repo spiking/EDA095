@@ -24,11 +24,11 @@ public class ServerThread extends Thread {
 		while (true) {
 			if (!socket.isClosed()) {
 				try {
-					int length = in.read(input);
+					int length = in.read(input); // number of read bytes
 					messageHandler.writeMessage(input, length, socket);
 				} catch (Exception e) {
 					// e.printStackTrace();
-					System.out.println("CLIENT - UNKNOWN CONNETION FAILURE!");
+					System.out.println("A client has disconnected (not by valid command).");
 					break;
 				}
 			} 

@@ -17,15 +17,23 @@ public class Client {
 			e.printStackTrace();
 		}
 
-		BufferedReader out = new BufferedReader(new InputStreamReader(System.in));
+		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		ClientThread clientThread = new ClientThread(socket);
 		clientThread.start();
 
 		while (true) {
 			try {
-				byte[] output = out.readLine().getBytes();
-				os.write(output);
+
+				String stringInput = in.readLine();
+				byte[] input = stringInput.getBytes();
+				os.write(input);
 				os.flush();
+
+				if (stringInput.equals("Q:")) {
+					socket.close();
+					System.exit(0);
+				}
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

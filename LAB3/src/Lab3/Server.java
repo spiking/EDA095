@@ -19,9 +19,10 @@ public class Server {
 
 	public void init() {
 		Socket socket;
-		System.out.println("SERVER STARTED!");
+		System.out.println("Server started, port number 30000");
+		
 		try {
-			while ((socket = server.accept()) != null) {
+			while ((socket = server.accept()) != null) { // accepts connections to the server socket
 				clientHandler.addConnection(socket);
 				ServerThread serverThread = new ServerThread(messageHandler, socket);
 				serverThread.start();
