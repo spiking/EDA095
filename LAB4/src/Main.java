@@ -23,13 +23,5 @@ public class Main {
 
 		crawler.addURLToRemaining(url.toString());
 		executor.shutdown();
-
-		try {
-			executor.awaitTermination(10, TimeUnit.MINUTES);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		crawler.printAll();
 	}
 }

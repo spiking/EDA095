@@ -60,5 +60,7 @@ public class Processor extends Thread {
 				}
 			}
 		}
+		
+		crawler.printAll();
 	}
 }
