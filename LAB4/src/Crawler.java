@@ -1,7 +1,7 @@
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
-import java.util.TreeSet;
 
 public class Crawler {
 	private Set<String> traversedURLs; // gone through
@@ -10,13 +10,20 @@ public class Crawler {
 	private Set<String> printMails; // all mails
 
 	public Crawler() {
-		traversedURLs = new TreeSet<String>();
+		traversedURLs = new HashSet<String>();
 		remainingURLs = new LinkedList<String>();
-		printURLs = new TreeSet<String>();
-		printMails = new TreeSet<String>();
+		printURLs = new HashSet<String>();
+		printMails = new HashSet<String>();
 	}
 
 	public synchronized String getURLFromRemaining() {
+		try {
+			System.out.println("Waiting..");
+			wait();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
 		String url = remainingURLs.poll();
 		if (!traversedURLs.contains(url)) {
 			traversedURLs.add(url);
@@ -29,10 +36,11 @@ public class Crawler {
 		remainingURLs.add(URL);
 		printURLs.add(URL);
 		notifyAll();
+		
 	}
 
 	public void printAll() {
-		for (String url : printURLs) {
+		for (String url : traversedURLs) {
 			System.out.println(url);
 		}
 
@@ -44,12 +52,10 @@ public class Crawler {
 
 		System.out.println("\nSites traversed: " + traversedURLs.size());
 		System.out.println("Sites remaining: " + remainingURLs.size());
-		System.out.println("Mail found: " + printMails.size());
-		// System.out.println("URLs found: " + printURLs.size());
 	}
 
 	public boolean isDone() {
-		return traversedURLs.size() >= 100 ? true : false;
+		return traversedURLs.size() >= 500 ? true : false;
 	}
 
 	public synchronized int getPrintMailSize() {
@@ -62,12 +68,13 @@ public class Crawler {
 
 	public synchronized void addToPrintURLs(String URL) {
 		printURLs.add(URL);
-		notifyAll();
 	}
 
-	public synchronized void addToPrintMails(String mail) {
+	public synchronized void addToMail(String mail) {
 		printMails.add(mail);
-		notifyAll();
 	}
-
+	
+	public synchronized int getTraversedSize() {
+		return traversedURLs.size();
+	}
 }
