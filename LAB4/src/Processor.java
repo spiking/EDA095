@@ -1,11 +1,7 @@
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class Processor extends Thread {
@@ -62,21 +58,5 @@ public class Processor extends Thread {
 		}
 
 		System.out.println("Completly done! \n");
-	}
-
-	void parse(String stringUrl) throws IOException {
-		URL url = new URL("http://cs.lth.se/eda095/");
-		InputStream is = url.openStream();
-		Document doc = Jsoup.parse(is, "UTF-8", "http://cs.lth.se/");
-		Elements base = doc.getElementsByTag("base");
-		System.out.println("Base : " + base);
-		Elements links = doc.getElementsByTag("a");
-		for (Element link : links) {
-			String linkHref = link.attr("href");
-			String linkAbsHref = link.attr("abs:href");
-			String linkText = link.text();
-			System.out.println("href: " + linkHref + "abshref: " + linkAbsHref + " text: " + linkText);
-		}
-		is.close();
 	}
 }
