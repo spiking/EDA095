@@ -1,7 +1,8 @@
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -22,27 +23,36 @@ public class Processor extends Thread {
 			if (nextURL != null) {
 				try {
 					URL url = new URL(nextURL);
-					URLConnection urlc = url.openConnection();
-					Document document = Jsoup.connect(url.toString()).timeout(10*1000).userAgent(USER_AGENT).get();
+					URLConnection urlConn = url.openConnection();
+					Document document = Jsoup.connect(url.toString()).timeout(10 * 1000).userAgent(USER_AGENT).get();
 
-					if (urlc.getContentType().contains("text/html")) {
-
-						System.out.println("\nReceived webpage at " + url);
-						Elements linksOnPage = document.select("a[href]");
-						Elements linksOnPageFrame = document.select("frame");
-						System.out.println("Found " + linksOnPage.size() + " links");
-						System.out.println("Found " + linksOnPageFrame.size() + " frame links");
-						System.out.println("Traversed " + crawler.getTraversedSize() + " links");
+					if (urlConn.getContentType().contains("text/html")) {
 						
-						for (Element link : linksOnPage) { // not handling frames
-							if (link.toString().contains("mailto")) {
-								crawler.addToMail(link.absUrl("href"));
+						System.out.println("\nReceived webpage at (url) " + url);
+						Elements links = document.getElementsByTag("a");
+						Elements frames = document.select("frame");
+						System.out.println("Found " + links.size() + " links");
+						System.out.println("Found " + frames.size() + " frame links");
+						System.out.println("Total traversed " + crawler.getTraversedSize() + " links");
+
+						links.forEach(link -> {
+							String absHref = link.attr("abs:href"); 
+							String relHref = link.attr("href"); 
+//							System.out.println("absHref: " + absHref + "\n" + "relHref: " + relHref + "\n" + "text: \n");
+							
+							if(absHref.length() + relHref.length() > 1) {
+								if (link.toString().contains("mailto")) {
+									crawler.addToMail(link.absUrl("href"));
+								} else {
+									crawler.addURLToRemaining(link.absUrl("href")); 
+									crawler.addToPrintURLs(link.absUrl("href"));
+								}
 							} else {
-								crawler.addURLToRemaining(link.absUrl("href"));
-								crawler.addToPrintURLs(link.absUrl("href"));
+//								System.out.println("No valid link! \n");
 							}
-						}
-					} 
+							
+						});
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -52,5 +62,21 @@ public class Processor extends Thread {
 		}
 
 		System.out.println("Completly done! \n");
+	}
+
+	void parse(String stringUrl) throws IOException {
+		URL url = new URL("http://cs.lth.se/eda095/");
+		InputStream is = url.openStream();
+		Document doc = Jsoup.parse(is, "UTF-8", "http://cs.lth.se/");
+		Elements base = doc.getElementsByTag("base");
+		System.out.println("Base : " + base);
+		Elements links = doc.getElementsByTag("a");
+		for (Element link : links) {
+			String linkHref = link.attr("href");
+			String linkAbsHref = link.attr("abs:href");
+			String linkText = link.text();
+			System.out.println("href: " + linkHref + "abshref: " + linkAbsHref + " text: " + linkText);
+		}
+		is.close();
 	}
 }

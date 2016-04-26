@@ -1,8 +1,5 @@
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -10,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 public class Main {
 
 	public static void main(String[] args) throws MalformedURLException {
-		
+
 		long start = System.currentTimeMillis();
 
 		Crawler crawler = new Crawler();
@@ -29,10 +26,9 @@ public class Main {
 		try {
 			executor.awaitTermination(60, TimeUnit.MINUTES);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		long finished = System.currentTimeMillis();
 		crawler.printAll();
 		System.out.println("Time: " + (finished - start) / (double) 1000);

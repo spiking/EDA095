@@ -23,7 +23,7 @@ public class Crawler {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		
+
 		String url = remainingURLs.poll();
 		if (!traversedURLs.contains(url)) {
 			traversedURLs.add(url);
@@ -34,9 +34,7 @@ public class Crawler {
 
 	public synchronized void addURLToRemaining(String URL) {
 		remainingURLs.add(URL);
-		printURLs.add(URL);
 		notifyAll();
-		
 	}
 
 	public void printAll() {
@@ -55,7 +53,7 @@ public class Crawler {
 	}
 
 	public boolean isDone() {
-		return traversedURLs.size() >= 500 ? true : false;
+		return traversedURLs.size() >= 100 ? true : false;
 	}
 
 	public synchronized int getPrintMailSize() {
@@ -73,7 +71,7 @@ public class Crawler {
 	public synchronized void addToMail(String mail) {
 		printMails.add(mail);
 	}
-	
+
 	public synchronized int getTraversedSize() {
 		return traversedURLs.size();
 	}
