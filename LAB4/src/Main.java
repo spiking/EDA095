@@ -20,7 +20,7 @@ public class Main {
 			System.out.println("Thread started!");
 		}
 
-		crawler.addURLToRemaining(url.toString());
+		crawler.addURL(url.toString()); // start URL
 		executor.shutdown();
 
 		try {

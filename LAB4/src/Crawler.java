@@ -4,26 +4,17 @@ import java.util.Queue;
 import java.util.Set;
 
 public class Crawler {
-	private Set<String> traversedURLs; // gone through
-	private Queue<String> remainingURLs; // will go through
-	private Set<String> printURLs; // all URLs
-	private Set<String> printMails; // all mails
+	private Set<String> traversedURLs;
+	private Queue<String> remainingURLs;
+	private Set<String> mails;
 
 	public Crawler() {
 		traversedURLs = new HashSet<String>();
 		remainingURLs = new LinkedList<String>();
-		printURLs = new HashSet<String>();
-		printMails = new HashSet<String>();
+		mails = new HashSet<String>();
 	}
 
 	public synchronized String getURLFromRemaining() {
-		try {
-			System.out.println("Waiting..");
-			wait();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
 		String url = remainingURLs.poll();
 		if (!traversedURLs.contains(url)) {
 			traversedURLs.add(url);
@@ -32,44 +23,29 @@ public class Crawler {
 		return null;
 	}
 
-	public synchronized void addURLToRemaining(String URL) {
-		remainingURLs.add(URL);
-		notifyAll();
+	public synchronized void addURL(String URL) {
+		if (!remainingURLs.contains(URL))
+			remainingURLs.add(URL);
 	}
 
 	public void printAll() {
-		for (String url : traversedURLs) {
-			System.out.println(url);
-		}
-
 		System.out.println();
-
-		for (String url : printMails) {
-			System.out.println(url);
-		}
+		traversedURLs.forEach(url -> { System.out.println(url); });
+		System.out.println();
+		mails.forEach(mail -> { System.out.println(mail); });
 
 		System.out.println("\nSites traversed: " + traversedURLs.size());
+		System.out.println("Mail addresses: " + mails.size());
 		System.out.println("Sites remaining: " + remainingURLs.size());
 	}
 
-	public boolean isDone() {
+	public synchronized boolean isDone() {
 		return traversedURLs.size() >= 100 ? true : false;
 	}
 
-	public synchronized int getPrintMailSize() {
-		return printMails.size();
-	}
-
-	public synchronized int getPrintUrlSize() {
-		return printURLs.size();
-	}
-
-	public synchronized void addToPrintURLs(String URL) {
-		printURLs.add(URL);
-	}
-
-	public synchronized void addToMail(String mail) {
-		printMails.add(mail);
+	public synchronized void addMail(String mail) {
+		if (!mails.contains(mail))
+			mails.add(mail);
 	}
 
 	public synchronized int getTraversedSize() {
